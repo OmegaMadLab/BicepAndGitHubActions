@@ -15,7 +15,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
 }
 
 resource webApplication 'Microsoft.Web/sites@2018-11-01' = {
-  name: '${webAppName}-${environment}'
+  name: take('${webAppName}-${environment}-${uniqueString(resourceGroup().id)}', 20)
   location: resourceGroup().location
     properties: {
     serverFarmId: appServicePlan.id

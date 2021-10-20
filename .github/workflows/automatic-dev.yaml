@@ -1,0 +1,25 @@
+name: webapp_dev_commit
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+    AZURE_RESOURCEGROUP_NAME: BicepAndGitHub-DEV
+    ENVIRONMENT: DEV
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
+    - uses: azure/arm-deploy@v1
+      with:
+        deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
+        template: ./bicep/webapp.bicep
+        parameters: environment=${{ env.ENVIRONMENT }} webAppName='DemoWebApp'

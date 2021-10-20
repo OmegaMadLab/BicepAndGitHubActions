@@ -1,13 +1,11 @@
 name: webapp_dev_commit
 
-on:
-  push:
-    branches:
-      - dev
+on: workflow_dispatch
 
 env:
     AZURE_RESOURCEGROUP_NAME: BicepAndGitHub-DEV-RG
     ENVIRONMENT: DEV
+    BICEPFILE: ./Bicep/webapp.bicep
 
 jobs:
   deploy:
@@ -17,6 +15,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
+    # Transpile bicep and check for linter errors
+    - name: Build ARM Template from bicep file
+      # run: |
+      # az bicep build --file ${{ env.BICEPFILE }}
+      uses: Azure/bicep-build-action@v1.0.0
+      with:
+        bicepFilePath: ${{ env.BICEPFILE }}
+        outputFilePath: azuredeploy.json
+
     # Login to Azure
     - name: Azure login
       uses: azure/login@v1
@@ -29,5 +36,5 @@ jobs:
       with:
         deploymentName: ${{ github.run_number }}
         resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
-        template: ./Bicep/webapp.bicep
+        template: ${{ env.BICEPFILE }}
         parameters: environment=${{ env.ENVIRONMENT }} webAppName=DemoWebApp

@@ -4,6 +4,7 @@
 ])
 param environment string = 'DEV'
 param webAppName string
+param unused string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   name: '${webAppName}-${environment}-AppPlan'

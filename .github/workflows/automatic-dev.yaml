@@ -21,5 +21,5 @@ jobs:
       with:
         deploymentName: ${{ github.run_number }}
         resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
-        template: ./bicep/webapp.bicep
+        template: ./Bicep/webapp.bicep
         parameters: environment=${{ env.ENVIRONMENT }} webAppName='DemoWebApp'

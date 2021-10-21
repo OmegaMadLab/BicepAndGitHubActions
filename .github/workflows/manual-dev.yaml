@@ -9,7 +9,7 @@ env:
     BICEPFILE: ./Bicep/webapp.bicep
 
 jobs:
-  deploy:
+  Test and Deploy:
     runs-on: ubuntu-latest
     steps:
     # Checks out a copy of the repo on a ubuntu-latest runner
@@ -41,6 +41,7 @@ jobs:
       run: |
         az deployment group validate \
           --name '${{ github.run_number }}' \
+          --resource-group '${{ env.AZURE_RESOURCEGROUP_NAME }}' \
           --template-file '${{ env.BICEPFILE }}' \
           --parameters environment=${{ env.ENVIRONMENT }} \
                        webAppName=DemoWebApp

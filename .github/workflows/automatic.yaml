@@ -80,7 +80,7 @@ jobs:
 
   previewIaCProd:
     name: Preview IaC changes in PROD
-    if: github.ref == 'refs/heads/prod'
+    if: github.ref == 'refs/heads/main'
     needs: [buildIaC]
     runs-on: ubuntu-20.04
     steps:
@@ -109,7 +109,7 @@ jobs:
 
   deployProd:
     name: Deploy to PROD environment
-    if: github.ref == 'refs/heads/prod'
+    if: github.ref == 'refs/heads/main'
     environment:
       name: Prod
     needs: [previewIaCProd]

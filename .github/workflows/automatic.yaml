@@ -85,7 +85,7 @@ jobs:
     name: Preview IaC changes in PROD
     if: github.ref == 'refs/heads/dev'
     needs: [buildIaC]
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-20.04
     steps:
     # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
@@ -115,7 +115,7 @@ jobs:
     environment:
       name: Prod
     needs: [previewIaCProd]
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-20.04
     steps:
     # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code

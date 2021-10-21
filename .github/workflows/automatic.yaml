@@ -2,11 +2,6 @@ name: webapp_automatic
 
 on: 
   push:
-    branches:
-      - dev
-  pull_request:
-    branches:
-      - master
 
 env:
     BICEP_FILE: ./Bicep/webapp.bicep

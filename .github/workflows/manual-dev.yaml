@@ -1,6 +1,7 @@
 name: webapp_dev_manual
 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
 
 env:
     AZURE_RESOURCEGROUP_NAME: BicepAndGitHub-DEV-RG

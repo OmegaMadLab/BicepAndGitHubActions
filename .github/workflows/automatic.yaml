@@ -115,6 +115,7 @@ jobs:
     environment:
       name: Prod
     needs: [previewIaCProd]
+    runs-on: ubuntu_latest
     steps:
     # Checks out a copy of the repo on a ubuntu-latest runner
     - name: Checkout code

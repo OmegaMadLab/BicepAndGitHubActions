@@ -19,5 +19,13 @@ resource webApplication 'Microsoft.Web/sites@2018-11-01' = {
   location: resourceGroup().location
     properties: {
     serverFarmId: appServicePlan.id
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'ThisIsAnAppSetting'
+          value: 'demo'
+        }
+      ]
+    }
   }
 }

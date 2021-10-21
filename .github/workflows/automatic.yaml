@@ -13,9 +13,9 @@ jobs:
 
   buildIaC:
     name: Build the infrastructure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -57,9 +57,9 @@ jobs:
     name: Deploy to DEV environment
     if: github.ref == 'refs/heads/dev'
     needs: [buildIaC]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -83,11 +83,11 @@ jobs:
 
   previewIaCProd:
     name: Preview IaC changes in PROD
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/prod'
     needs: [buildIaC]
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -112,11 +112,13 @@ jobs:
 
   deployProd:
     name: Deploy to PROD environment
+    if: github.ref == 'refs/heads/prod'
     environment:
       name: Prod
     needs: [previewIaCProd]
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 

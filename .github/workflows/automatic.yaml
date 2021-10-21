@@ -13,9 +13,9 @@ jobs:
 
   buildIaC:
     name: Build the infrastructure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -57,9 +57,9 @@ jobs:
     name: Deploy to DEV environment
     if: github.ref == 'refs/heads/dev'
     needs: [buildIaC]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -87,7 +87,7 @@ jobs:
     needs: [buildIaC]
     runs-on: ubuntu_latest
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -117,7 +117,7 @@ jobs:
     needs: [previewIaCProd]
     runs-on: ubuntu_latest
     steps:
-    # Checks out a copy of the repo on a ubuntu-latest runner
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
     - name: Checkout code
       uses: actions/checkout@v2
 

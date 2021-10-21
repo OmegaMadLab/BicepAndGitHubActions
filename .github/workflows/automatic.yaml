@@ -1,6 +1,7 @@
 name: webapp_automatic
 
-on: [push, pull_request]
+on: 
+  push:
 
 env:
     BICEP_FILE: ./Bicep/webapp.bicep

@@ -1,6 +1,6 @@
 name: webapp_dev_manual
 
-on: workflow_dispatch
+on: [workflow_dispatch]
 
 env:
     AZURE_RESOURCEGROUP_NAME: BicepAndGitHub-DEV-RG
@@ -14,10 +14,15 @@ jobs:
     # Checks out a copy of the repo on a ubuntu-latest runner
     - name: Checkout code
       uses: actions/checkout@v2
+
+    # Login to Azure - can be placed below if validation is executed via Bicep build or related Action
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
     
     # Transpile bicep and check for errors
     - name: Build ARM Template from bicep file and validate it
-      
       # Option 1 - Build with Az CLI and ensure transpilation and linting
       # run: |
       # az bicep build --file ${{ env.BICEPFILE }}
@@ -35,13 +40,7 @@ jobs:
           --template-file '${{ env.BICEPFILE }}' \
           --parameters environment=${{ env.ENVIRONMENT }} \
                        webAppName=DemoWebApp
-
-    # Login to Azure
-    - name: Azure login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZCRED_DEV }}
-    
+   
     # Deploy template
     - name: Deploy template
       uses: azure/arm-deploy@v1

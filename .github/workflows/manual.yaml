@@ -1,10 +1,7 @@
-name: webapp_dev_commit
-
+name: webapp_manual
 on:
-  push:
-    branches:
-      - dev
-
+  workflow_dispatch:
+  
 env:
     AZURE_RESOURCEGROUP_NAME: BicepAndGitHub-DEV-RG
     ENVIRONMENT: DEV

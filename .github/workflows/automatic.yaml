@@ -1,0 +1,139 @@
+name: webapp_automatic
+
+on: 
+  push:
+    branches:
+      - dev
+      - master
+
+env:
+    BICEP_FILE: ./Bicep/webapp.bicep
+
+jobs:
+
+  buildIaC:
+    name: Build the infrastructure
+    runs-on: ubuntu-latest
+    steps:
+    # Checks out a copy of the repo on a ubuntu-latest runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure - can be placed below if validation is executed via Bicep build or related Action
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
+    
+    # Transpile bicep and check for errors
+
+    # Option 1 - Build with Az CLI and ensure transpilation and linting
+    # - name: Build ARM Template from bicep file and validate it
+    #   run: |
+    #   az bicep build --file ${{ env.BICEP_FILE }}
+    
+    # Option 2 - Build with an Action and ensure transpilation and linting
+    # - name: Build ARM Template from bicep file and validate it
+    #   uses: Azure/bicep-build-action@v1.0.0
+    #   with:
+    #     bicepFilePath: ${{ env.BICEP_FILE }}
+    #     outputFilePath: azuredeploy.json
+
+    # Option 3 - Simulate a deployment with Az CLI and ensure transpilation, linting and pre-flight checks
+    
+    - name: Build ARM Template from bicep file and validate it versus DEV environment
+      env:
+        AZURE_RESOURCEGROUP_NAME: 'BicepAndGithub-DEV-RG'
+        TARGET_ENVIRONMENT: 'DEV'
+      run: |
+        az deployment group validate \
+          --name '${{ github.run_number }}' \
+          --resource-group '${{ env.AZURE_RESOURCEGROUP_NAME }}' \
+          --template-file '${{ env.BICEP_FILE }}' \
+          --parameters environment=${{ env.TARGET_ENVIRONMENT }} \
+                       webAppName=DemoWebApp
+
+  deployDev:
+    name: Deploy to DEV environment
+    if: github.ref == 'refs/heads/dev'
+    needs: [buildIaC]
+    runs-on: ubuntu-latest
+    steps:
+    # Checks out a copy of the repo on a ubuntu-latest runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
+
+    # Deploy the template on DEV
+    - name: Deploy template
+      uses: azure/arm-deploy@v1
+      env:
+        AZURE_RESOURCEGROUP_NAME: 'BicepAndGithub-DEV-RG'
+        TARGET_ENVIRONMENT: 'DEV'
+      with:
+        deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
+        template: ${{ env.BICEP_FILE}}
+        parameters: environment=${{ env.TARGET_ENVIRONMENT }} webAppName=DemoWebApp
+
+  previewIaCProd:
+    name: Preview IaC changes in PROD
+    if: github.ref == 'refs/heads/dev'
+    needs: [buildIaC]
+    runs-on: ubuntu_latest
+    steps:
+    # Checks out a copy of the repo on a ubuntu-latest runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_PROD }}
+
+    # Preview changes with What-If deployment
+    - name: Preview changes to PROD environment
+      env:
+        AZURE_RESOURCEGROUP_NAME: 'BicepAndGithub-PROD-RG'
+        TARGET_ENVIRONMENT: 'PROD'
+      run: |
+        az deployment group what-if \
+          --name '${{ github.run_number }}' \
+          --resource-group '${{ env.AZURE_RESOURCEGROUP_NAME }}' \
+          --template-file '${{ env.BICEP_FILE }}' \
+          --parameters environment=${{ env.TARGET_ENVIRONMENT }} \
+                       webAppName=DemoWebApp
+
+  deployProd:
+    name: Deploy to PROD environment
+    environment:
+      name: Prod
+    needs: [previewIaCProd]
+    steps:
+    # Checks out a copy of the repo on a ubuntu-latest runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure - can be placed below if validation is executed via Bicep build or related Action
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_PROD }}
+
+    # Deploy the template on DEV
+    - name: Deploy template
+      uses: azure/arm-deploy@v1
+      env:
+        AZURE_RESOURCEGROUP_NAME: 'BicepAndGithub-PROD-RG'
+        TARGET_ENVIRONMENT: 'PROD'
+      with:
+        deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
+        template: ${{ env.BICEP_FILE}}
+        parameters: environment=${{ env.TARGET_ENVIRONMENT }} webAppName=DemoWebApp

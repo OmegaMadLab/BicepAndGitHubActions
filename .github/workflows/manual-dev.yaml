@@ -1,4 +1,4 @@
-name: webapp_dev_commit
+name: webapp_dev_manual
 
 on: workflow_dispatch
 
@@ -15,14 +15,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-    # Transpile bicep and check for linter errors
-    - name: Build ARM Template from bicep file
+    # Transpile bicep and check for errors
+    - name: Build ARM Template from bicep file and validate it
+      
+      # Option 1 - Build with Az CLI and ensure transpilation and linting
       # run: |
       # az bicep build --file ${{ env.BICEPFILE }}
-      uses: Azure/bicep-build-action@v1.0.0
-      with:
-        bicepFilePath: ${{ env.BICEPFILE }}
-        outputFilePath: azuredeploy.json
+      
+      # Option 2 - Build with an Action and ensure transpilation and linting
+      # uses: Azure/bicep-build-action@v1.0.0
+      # with:
+      #   bicepFilePath: ${{ env.BICEPFILE }}
+      #   outputFilePath: azuredeploy.json
+
+      # Option 3 - Simulate a deployment with Az CLI and ensure transpilation, linting and pre-flight checks
+      run: |
+        az deployment group validate \
+          --name '${{ github.run_number }}' \
+          --template-file '${{ env.BICEPFILE }}' \
+          --parameters environment=${{ env.ENVIRONMENT }} \
+                       webAppName=DemoWebApp
 
     # Login to Azure
     - name: Azure login

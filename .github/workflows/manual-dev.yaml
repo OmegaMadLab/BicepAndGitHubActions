@@ -9,7 +9,8 @@ env:
     BICEPFILE: ./Bicep/webapp.bicep
 
 jobs:
-  Test and Deploy:
+  Test_and_Deploy:
+    name: Test & Deploy
     runs-on: ubuntu-latest
     steps:
     # Checks out a copy of the repo on a ubuntu-latest runner

@@ -5,7 +5,7 @@
 param environment string = 'DEV'
 param webAppName string
 
-module appPlanModule 'br:acr55899.azurecr.io/bicep/modules/appserviceplan:v1' = {
+module appPlanModule 'br:acr55899.azurecr.io/bicep/modules/appserviceplan:v19' = {
   name: 'AppPlan'
   params: {
     environment: environment
